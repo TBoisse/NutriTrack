@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NutriTrack — Analyse Nutritionnelle</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+    <link rel="stylesheet" href="/static/tailwind.css">
+    <link rel="stylesheet" href="/static/index.css">
+</head>
+
+<body>
+
+  <header class="flex items-center gap-4 py-5 px-10">
+    <div class="logo-mark"></div>
+    <h1>Nutri<span>Track</span></h1>
+    <span class="header-sub">Analyse nutritionnelle</span>
+  </header>
+
+  <div class="main">
+
+    <!-- ── LEFT PANEL ── -->
+    <aside class="panel-left">
+      <div class="panel-header">
+        <h2>Sélection des ingrédients</h2>
+        <p>Ajoutez des aliments et ajustez les quantités</p>
+      </div>
+
+      <div class="selector-wrap">
+        <div class="selector-label">Ajouter un aliment</div>
+        <div class="select-row">
+          <select id="aliment-select">
+            <option value="">— Choisir un aliment —</option>
+            {% for a in aliments %}
+            <option value="{{ a }}">{{ a }}</option>
+            {% endfor %}
+          </select>
+          <button class="btn-add" onclick="addIngredient()">+ Ajouter</button>
+        </div>
+      </div>
+
+      <div class="ingredients-list" id="ingredients-list">
+        <div class="empty-state" id="empty-state">
+          <div class="icon">🥗</div>
+          <p>Aucun ingrédient sélectionné.<br>Commencez par choisir un aliment ci-dessus.</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── RIGHT PANEL ── -->
+    <main class="panel-right" id="right-panel">
+      <div class="no-data" id="no-data-msg">
+        <div class="icon">🍉</div>
+        <p>Sélectionnez des ingrédients pour voir<br>le récapitulatif nutritionnel.</p>
+      </div>
+      <div id="nutrition-content" style="display:none">
+        <h2>Récapitulatif nutritionnel</h2>
+        <p class="total-weight">
+          Poids total : <span id="total-weight-val">0</span> g
+          &nbsp;|&nbsp;
+          Prix total : <span id="total-price-val">0.00</span> €
+        </p>
+        
+
+        <div class="summary-cards">
+          <div class="summary-card kcal">
+            <div class="val" id="card-kcal">0</div>
+            <div class="lbl">kcal</div>
+          </div>
+          <div class="summary-card prot">
+            <div class="val" id="card-prot">0</div>
+            <div class="lbl">Protéines (g)</div>
+          </div>
+          <div class="summary-card">
+            <div class="val" id="card-lip">0</div>
+            <div class="lbl">Lipides (g)</div>
+          </div>
+          <div class="summary-card">
+            <div class="val" id="card-suc">0</div>
+            <div class="lbl">Sucres (g)</div>
+          </div>
+        </div>
+
+        <div class="table-section">
+          <div class="table-section-title">Détail des micronutriments</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Nutriment</th>
+                <th>Unité</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="macro-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const MACROS = {{ macros | tojson }};
+    const RECOS = {{ recos | tojson }};
+  </script>
+  <script src="/static/index.js"></script>
+</body>
+
+</html>

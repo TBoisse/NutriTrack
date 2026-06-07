@@ -1,5 +1,5 @@
 const ALL_DATA = {};
-const selected = {}; // id => { name, grams }
+const selected = {}; // id => { name, grams, price100g }
 let cardCounter = 0;
 
 
@@ -49,24 +49,18 @@ function renderCard(id, name) {
     card.innerHTML = `
         <div class="card-top">
           <span class="ingredient-name">${name}</span>
-          <button class="btn-remove" data-id="${id}">✕</button>
+          <button class="btn-remove" data-id="${id}" aria-label="Retirer ${name}">&times;</button>
         </div>
 
         <div class="slider-row">
-          <input type="range" min="1" max="500" value="100" step="1" data-id="${id}" style="--pct: 20%">
+          <input type="range" min="1" max="500" value="100" step="1" data-id="${id}" style="--pct: 20%"
+            aria-label="Quantité de ${name} en grammes">
           <div class="qty-display" data-qty="${id}">100 g</div>
         </div>
 
-        <div style="margin-top:10px; display:flex; align-items:center; gap:8px;">
-          <label>€/100g</label>
-          <input
-            type="number"
-            min="0"
-            step="0.01"
-            value="0"
-            data-price="${id}"
-            style="width:90px;padding:6px 8px;border:1px solid #ccc;border-radius:8px;"
-          >
+        <div class="price-row">
+          <label for="price-${id}">€/100g</label>
+          <input type="number" id="price-${id}" min="0" step="0.01" value="0" data-price="${id}">
         </div>
       `;
 
@@ -97,11 +91,8 @@ function removeIngredient(id) {
     const card = document.querySelector(`.ingredient-card[data-id="${id}"]`);
     if (card) card.remove();
     if (Object.keys(selected).length === 0) {
-        document.getElementById('ingredients-list').innerHTML = `
-      <div class="empty-state" id="empty-state">
-        <div class="icon">🥗</div>
-        <p>Aucun ingrédient sélectionné.<br>Commencez par choisir un aliment ci-dessus.</p>
-      </div>`;
+        const emptyState = document.getElementById('empty-state');
+        if (emptyState) emptyState.style.display = '';
     }
     updateNutrition();
 }
@@ -157,13 +148,13 @@ function updateNutrition() {
         }
         const val = totals[key];
         const isKcal = key === 'energie_kcal_100g';
-        let display = val.toFixed(1) + ' ' + unit + " / " + RECOS[index][1] + ' ' + unit;
-        let isZero = val === 0;
+        const display = val.toFixed(1) + ' ' + unit + ' / ' + RECOS[index][1] + ' ' + unit;
+        const isZero = val === 0;
         const tr = document.createElement('tr');
         tr.innerHTML = `
       <td>${label}</td>
       <td><span class="badge-unit ${isKcal ? 'kcal' : ''}">${isKcal ? 'kcal' : unit}</span></td>
-      <td class="${isZero ? 'zero' : ''}">${isZero ? '—' : display}</td>
+      <td class="${isZero ? 'zero' : ''}">${isZero ? '0 ' + unit : display}</td>
     `;
         tbody.appendChild(tr);
     });

@@ -5,6 +5,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NutriTrack | Analyse nutritionnelle</title>
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M2 16a14 14 0 0 0 28 0Z' fill='%234CAF6B'/%3E%3Cpath d='M5 16a11 11 0 0 0 22 0Z' fill='%23E8404A'/%3E%3C/svg%3E">
   <link
     href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap"
     rel="stylesheet">
@@ -17,12 +19,15 @@
   <header class="flex items-center gap-4 py-5 px-10">
     <div class="logo-mark"></div>
     <h1>Nutri<span>Track</span></h1>
-    <span class="header-sub">Analyse nutritionnelle</span>
+    <nav class="view-tabs" role="tablist">
+      <button class="view-tab active" data-view="meal" role="tab" aria-selected="true">Meal prep</button>
+      <button class="view-tab" data-view="compare" role="tab" aria-selected="false">Comparaison</button>
+    </nav>
   </header>
 
-  <div class="main">
+  <!-- Vue meal prep -->
+  <div class="main" id="view-meal">
 
-    <!-- Panneau de gauche : selection des ingredients -->
     <aside class="panel-left">
       <div class="panel-header">
         <h2>Sélection des ingrédients</h2>
@@ -38,7 +43,7 @@
             <option value="{{ a }}">{{ a }}</option>
             {% endfor %}
           </select>
-          <button class="btn-add" onclick="addIngredient()">+ Ajouter</button>
+          <button class="btn-add" onclick="addIngredient()">Ajouter</button>
         </div>
       </div>
 
@@ -56,7 +61,6 @@
       </div>
     </aside>
 
-    <!-- Panneau de droite : recapitulatif nutritionnel -->
     <main class="panel-right" id="right-panel">
       <div class="no-data" id="no-data-msg">
         <svg class="icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -71,26 +75,28 @@
         <p>Sélectionnez des ingrédients pour voir<br>le récapitulatif nutritionnel.</p>
       </div>
       <div id="nutrition-content" style="display:none">
-        <h2>Récapitulatif nutritionnel</h2>
-        <p class="totals-line">
-          <span class="total-item">Poids total : <span id="total-weight-val">0</span> g</span>
-          <span class="total-item">Prix total : <span id="total-price-val">0.00</span> €</span>
-        </p>
+        <div class="recap-head">
+          <h2>Récapitulatif nutritionnel</h2>
+          <p class="totals-line">
+            <span class="total-item"><span id="total-weight-val">0</span> g</span>
+            <span class="total-item"><span id="total-price-val">0.00</span> €</span>
+          </p>
+        </div>
 
-        <div class="summary-cards">
-          <div class="summary-card kcal">
+        <div class="stats-strip">
+          <div class="stat kcal">
             <div class="val" id="card-kcal">0</div>
             <div class="lbl">kcal</div>
           </div>
-          <div class="summary-card prot">
+          <div class="stat prot">
             <div class="val" id="card-prot">0</div>
             <div class="lbl">Protéines (g)</div>
           </div>
-          <div class="summary-card">
+          <div class="stat">
             <div class="val" id="card-lip">0</div>
             <div class="lbl">Lipides (g)</div>
           </div>
-          <div class="summary-card">
+          <div class="stat">
             <div class="val" id="card-suc">0</div>
             <div class="lbl">Sucres (g)</div>
           </div>
@@ -113,6 +119,64 @@
         </div>
       </div>
     </main>
+  </div>
+
+  <!-- Vue comparaison -->
+  <div class="compare-wrap" id="view-compare" hidden>
+    <div class="compare-head">
+      <h2>Comparer deux aliments</h2>
+      <p>Valeurs pour 100 g. La quantité la plus élevée apparaît en vert, la plus faible en rouge.</p>
+    </div>
+
+    <div class="compare-selects">
+      <div class="compare-select">
+        <label class="selector-label" for="compare-a">Aliment A</label>
+        <select id="compare-a">
+          <option value="">Choisir un aliment</option>
+          {% for a in aliments %}
+          <option value="{{ a }}">{{ a }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <span class="compare-vs">vs</span>
+      <div class="compare-select">
+        <label class="selector-label" for="compare-b">Aliment B</label>
+        <select id="compare-b">
+          <option value="">Choisir un aliment</option>
+          {% for a in aliments %}
+          <option value="{{ a }}">{{ a }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="no-data" id="compare-empty">
+      <svg class="icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M14 8v32" />
+        <path d="M34 8v32" />
+        <path d="M6 16l8-8 8 8" />
+        <path d="M26 32l8 8 8-8" />
+      </svg>
+      <p>Choisissez deux aliments pour les comparer.</p>
+    </div>
+
+    <div class="table-section" id="compare-table" hidden>
+      <div class="table-section-title">Comparaison nutritionnelle</div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Nutriment</th>
+              <th>Unité</th>
+              <th class="col-aliment" id="compare-head-a"></th>
+              <th class="col-aliment" id="compare-head-b"></th>
+            </tr>
+          </thead>
+          <tbody id="compare-tbody"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <script>

@@ -17,8 +17,23 @@ const UP_UNIT = {
 // Pre-load all data
 fetch('/api/aliments').then(r => r.json()).then(data => {
     Object.assign(ALL_DATA, data);
+    renderCompare();
 });
 
+/* ── Navigation entre les vues ── */
+document.querySelectorAll('.view-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.view-tab').forEach(t => {
+            const active = t === tab;
+            t.classList.toggle('active', active);
+            t.setAttribute('aria-selected', active);
+        });
+        document.getElementById('view-meal').hidden = tab.dataset.view !== 'meal';
+        document.getElementById('view-compare').hidden = tab.dataset.view !== 'compare';
+    });
+});
+
+/* ── Vue meal prep ── */
 function addIngredient() {
     const sel = document.getElementById('aliment-select');
     const name = sel.value;
@@ -155,6 +170,66 @@ function updateNutrition() {
       <td>${label}</td>
       <td><span class="badge-unit ${isKcal ? 'kcal' : ''}">${isKcal ? 'kcal' : unit}</span></td>
       <td class="${isZero ? 'zero' : ''}">${isZero ? '0 ' + unit : display}</td>
+    `;
+        tbody.appendChild(tr);
+    });
+}
+
+/* ── Vue comparaison ── */
+const compareSelA = document.getElementById('compare-a');
+const compareSelB = document.getElementById('compare-b');
+
+compareSelA.addEventListener('change', renderCompare);
+compareSelB.addEventListener('change', renderCompare);
+
+function compareClass(a, b) {
+    if (a === b) return 'cmp-equal';
+    return a > b ? 'cmp-more' : 'cmp-less';
+}
+
+function renderCompare() {
+    const nameA = compareSelA.value;
+    const nameB = compareSelB.value;
+    const dataA = ALL_DATA[nameA];
+    const dataB = ALL_DATA[nameB];
+
+    const emptyMsg = document.getElementById('compare-empty');
+    const tableWrap = document.getElementById('compare-table');
+
+    if (!dataA || !dataB) {
+        emptyMsg.hidden = false;
+        tableWrap.hidden = true;
+        return;
+    }
+    emptyMsg.hidden = true;
+    tableWrap.hidden = false;
+
+    document.getElementById('compare-head-a').textContent = nameA;
+    document.getElementById('compare-head-b').textContent = nameB;
+
+    const tbody = document.getElementById('compare-tbody');
+    tbody.innerHTML = '';
+
+    let lastSection = null;
+    MACROS.forEach(([key, label, unit]) => {
+        const section = SECTIONS[key];
+        if (section && section !== lastSection) {
+            lastSection = section;
+            const tr = document.createElement('tr');
+            tr.className = 'section-row';
+            tr.innerHTML = `<td colspan="4">${section}</td>`;
+            tbody.appendChild(tr);
+        }
+        const valA = parseFloat(dataA[key]) || 0;
+        const valB = parseFloat(dataB[key]) || 0;
+        const isKcal = key === 'energie_kcal_100g';
+        const shownUnit = isKcal ? 'kcal' : unit;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+      <td>${label}</td>
+      <td><span class="badge-unit ${isKcal ? 'kcal' : ''}">${shownUnit}</span></td>
+      <td class="cmp-val ${compareClass(valA, valB)}">${valA.toFixed(1)} ${shownUnit}</td>
+      <td class="cmp-val ${compareClass(valB, valA)}">${valB.toFixed(1)} ${shownUnit}</td>
     `;
         tbody.appendChild(tr);
     });

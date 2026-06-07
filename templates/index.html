@@ -4,165 +4,143 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NutriTrack | Analyse nutritionnelle</title>
+  <title>NutriTrack | Calculateur et comparateur nutritionnel</title>
   <link rel="icon"
     href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M2 16a14 14 0 0 0 28 0Z' fill='%234CAF6B'/%3E%3Cpath d='M5 16a11 11 0 0 0 22 0Z' fill='%23E8404A'/%3E%3C/svg%3E">
   <link
-    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,800;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="/static/tailwind.css">
   <link rel="stylesheet" href="/static/index.css">
 </head>
 
 <body>
 
-  <header class="flex items-center gap-4 py-5 px-10">
-    <div class="logo-mark"></div>
-    <h1>Nutri<span>Track</span></h1>
-    <nav class="view-tabs" role="tablist">
-      <button class="view-tab active" data-view="meal" role="tab" aria-selected="true">Meal prep</button>
-      <button class="view-tab" data-view="compare" role="tab" aria-selected="false">Comparaison</button>
+  <header class="site-header">
+    <div class="brand">
+      <div class="logo-mark"></div>
+      <span class="brand-name">Nutri<em>Track</em></span>
+    </div>
+    <nav class="site-nav" role="tablist">
+      <button class="nav-link active" data-view="meal" role="tab" aria-selected="true">Meal prep</button>
+      <button class="nav-link" data-view="compare" role="tab" aria-selected="false">Comparaison</button>
+      <button class="nav-link" data-view="about" role="tab" aria-selected="false">À propos</button>
     </nav>
   </header>
 
   <!-- Vue meal prep -->
-  <div class="main" id="view-meal">
+  <main class="page" id="view-meal">
+    <div class="page-head">
+      <h2>Composez votre repas</h2>
+      <p>Recherchez des aliments, ajustez les quantités et suivez les apports.</p>
+    </div>
 
-    <aside class="panel-left">
-      <div class="panel-header">
-        <h2>Sélection des ingrédients</h2>
-        <p>Ajoutez des aliments et ajustez les quantités</p>
-      </div>
-
-      <div class="selector-wrap">
-        <label class="selector-label" for="aliment-select">Ajouter un aliment</label>
-        <div class="select-row">
-          <select id="aliment-select">
-            <option value="">Choisir un aliment</option>
-            {% for a in aliments %}
-            <option value="{{ a }}">{{ a }}</option>
-            {% endfor %}
-          </select>
-          <button class="btn-add" onclick="addIngredient()">Ajouter</button>
-        </div>
-      </div>
-
-      <div class="ingredients-list" id="ingredients-list">
-        <div class="empty-state" id="empty-state">
-          <svg class="icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5"
-            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M6 22h36" />
-            <path d="M8 22a16 16 0 0 0 32 0" />
-            <path d="M30 10l-8 12" />
-            <path d="M30 10c3-3 7-3 9 0" />
+    <div class="meal-grid">
+      <section class="ingredients-col">
+        <div class="combobox">
+          <svg class="combobox-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"
+            stroke-linecap="round" aria-hidden="true">
+            <circle cx="9" cy="9" r="6" />
+            <path d="M13.5 13.5L17 17" />
           </svg>
-          <p>Aucun ingrédient sélectionné.<br>Commencez par choisir un aliment ci-dessus.</p>
+          <input type="text" id="aliment-search" placeholder="Rechercher un aliment" autocomplete="off"
+            aria-label="Rechercher un aliment">
+          <ul class="combobox-list" id="aliment-results" hidden></ul>
         </div>
-      </div>
-    </aside>
 
-    <main class="panel-right" id="right-panel">
-      <div class="no-data" id="no-data-msg">
-        <svg class="icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5"
-          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M42 24a18 18 0 0 1-36 0" />
-          <path d="M6 24h36" />
-          <path d="M38 24a14 14 0 0 1-28 0" />
-          <circle cx="20" cy="30" r="0.5" fill="currentColor" />
-          <circle cx="28" cy="32" r="0.5" fill="currentColor" />
-          <circle cx="24" cy="27" r="0.5" fill="currentColor" />
-        </svg>
-        <p>Sélectionnez des ingrédients pour voir<br>le récapitulatif nutritionnel.</p>
-      </div>
-      <div id="nutrition-content" style="display:none">
-        <div class="recap-head">
-          <h2>Récapitulatif nutritionnel</h2>
-          <p class="totals-line">
-            <span class="total-item"><span id="total-weight-val">0</span> g</span>
-            <span class="total-item"><span id="total-price-val">0.00</span> €</span>
+        <div class="ingredients-list" id="ingredients-list">
+          <p class="empty-note" id="empty-state">
+            Aucun ingrédient pour le moment.<br>La recherche ci-dessus ajoute un aliment au repas.
           </p>
         </div>
+      </section>
 
-        <div class="stats-strip">
-          <div class="stat kcal">
-            <div class="val" id="card-kcal">0</div>
-            <div class="lbl">kcal</div>
-          </div>
-          <div class="stat prot">
-            <div class="val" id="card-prot">0</div>
-            <div class="lbl">Protéines (g)</div>
-          </div>
-          <div class="stat">
-            <div class="val" id="card-lip">0</div>
-            <div class="lbl">Lipides (g)</div>
-          </div>
-          <div class="stat">
-            <div class="val" id="card-suc">0</div>
-            <div class="lbl">Sucres (g)</div>
-          </div>
-        </div>
+      <section class="results-col">
+        <p class="empty-note" id="no-data-msg">
+          Le récapitulatif nutritionnel s'affichera ici.
+        </p>
 
-        <div class="table-section">
-          <div class="table-section-title">Détail des micronutriments</div>
+        <div id="nutrition-content" hidden>
+          <div class="recap-head">
+            <h3>Récapitulatif</h3>
+            <p class="totals-line">
+              <span id="total-weight-val">0</span> g
+              <span class="dot"></span>
+              <span id="total-price-val">0.00</span> €
+            </p>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat kcal">
+              <div class="val" id="card-kcal">0</div>
+              <div class="lbl">kcal</div>
+            </div>
+            <div class="stat prot">
+              <div class="val" id="card-prot">0</div>
+              <div class="lbl">Protéines (g)</div>
+            </div>
+            <div class="stat">
+              <div class="val" id="card-lip">0</div>
+              <div class="lbl">Lipides (g)</div>
+            </div>
+            <div class="stat">
+              <div class="val" id="card-suc">0</div>
+              <div class="lbl">Sucres (g)</div>
+            </div>
+          </div>
+
           <div class="table-scroll">
             <table>
               <thead>
                 <tr>
                   <th>Nutriment</th>
                   <th>Unité</th>
-                  <th>Total</th>
+                  <th>Total / recommandé</th>
                 </tr>
               </thead>
               <tbody id="macro-tbody"></tbody>
             </table>
           </div>
         </div>
-      </div>
-    </main>
-  </div>
+      </section>
+    </div>
+  </main>
 
   <!-- Vue comparaison -->
-  <div class="compare-wrap" id="view-compare" hidden>
-    <div class="compare-head">
+  <main class="page page-narrow" id="view-compare" hidden>
+    <div class="page-head">
       <h2>Comparer deux aliments</h2>
       <p>Valeurs pour 100 g. La quantité la plus élevée apparaît en vert, la plus faible en rouge.</p>
     </div>
 
     <div class="compare-selects">
-      <div class="compare-select">
-        <label class="selector-label" for="compare-a">Aliment A</label>
-        <select id="compare-a">
-          <option value="">Choisir un aliment</option>
-          {% for a in aliments %}
-          <option value="{{ a }}">{{ a }}</option>
-          {% endfor %}
-        </select>
+      <div class="combobox">
+        <svg class="combobox-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" aria-hidden="true">
+          <circle cx="9" cy="9" r="6" />
+          <path d="M13.5 13.5L17 17" />
+        </svg>
+        <input type="text" id="compare-a" placeholder="Premier aliment" autocomplete="off"
+          aria-label="Premier aliment">
+        <ul class="combobox-list" id="compare-a-results" hidden></ul>
       </div>
       <span class="compare-vs">vs</span>
-      <div class="compare-select">
-        <label class="selector-label" for="compare-b">Aliment B</label>
-        <select id="compare-b">
-          <option value="">Choisir un aliment</option>
-          {% for a in aliments %}
-          <option value="{{ a }}">{{ a }}</option>
-          {% endfor %}
-        </select>
+      <div class="combobox">
+        <svg class="combobox-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" aria-hidden="true">
+          <circle cx="9" cy="9" r="6" />
+          <path d="M13.5 13.5L17 17" />
+        </svg>
+        <input type="text" id="compare-b" placeholder="Second aliment" autocomplete="off"
+          aria-label="Second aliment">
+        <ul class="combobox-list" id="compare-b-results" hidden></ul>
       </div>
     </div>
 
-    <div class="no-data" id="compare-empty">
-      <svg class="icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5"
-        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M14 8v32" />
-        <path d="M34 8v32" />
-        <path d="M6 16l8-8 8 8" />
-        <path d="M26 32l8 8 8-8" />
-      </svg>
-      <p>Choisissez deux aliments pour les comparer.</p>
-    </div>
+    <p class="empty-note" id="compare-empty">
+      Choisissez deux aliments pour les comparer.
+    </p>
 
-    <div class="table-section" id="compare-table" hidden>
-      <div class="table-section-title">Comparaison nutritionnelle</div>
+    <div id="compare-table" hidden>
       <div class="table-scroll">
         <table>
           <thead>
@@ -177,9 +155,54 @@
         </table>
       </div>
     </div>
-  </div>
+  </main>
+
+  <!-- Vue a propos -->
+  <main class="page page-text" id="view-about" hidden>
+    <div class="page-head">
+      <h2>À propos</h2>
+      <p>D'où viennent les données et ce que ce site fait, et ne fait pas.</p>
+    </div>
+
+    <section class="about-section">
+      <h3>Source des données</h3>
+      <p>
+        Les valeurs nutritionnelles des aliments proviennent de la table de composition
+        <strong>Ciqual</strong> de l'ANSES, la base de référence française sur la composition
+        nutritionnelle des aliments.
+      </p>
+    </section>
+
+    <section class="about-section">
+      <h3>Ajustements apportés</h3>
+      <p>
+        La table Ciqual a été légèrement modifiée. Certaines quantités y sont renseignées sous forme
+        de seuil, par exemple une teneur en sodium notée « inférieure à 200 mg ». Pour permettre les calculs,
+        toutes ces valeurs ont été majorées au seuil indiqué : « sodium &lt; 200 » devient « sodium = 200 ».
+        Les totaux affichés peuvent donc légèrement surestimer certains apports.
+      </p>
+    </section>
+
+    <section class="about-section">
+      <h3>Apports recommandés</h3>
+      <p>
+        Les apports journaliers recommandés affichés en regard des totaux proviennent des
+        recommandations du <strong>NHS</strong> (service national de santé britannique).
+      </p>
+    </section>
+
+    <section class="about-section about-disclaimer">
+      <h3>Rôle du site</h3>
+      <p>
+        NutriTrack ne fournit aucun conseil diététique ou médical et ne sert pas à établir un régime
+        ni à orienter votre alimentation. Il joue uniquement le rôle de <strong>calculateur</strong> et de
+        <strong>comparateur</strong> nutritionnel.
+      </p>
+    </section>
+  </main>
 
   <script>
+    const ALIMENTS = {{ aliments | tojson }};
     const MACROS = {{ macros | tojson }};
     const RECOS = {{ recos | tojson }};
   </script>

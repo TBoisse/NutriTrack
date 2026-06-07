@@ -110,14 +110,6 @@ body {
     padding: 40px 40px 96px;
 }
 
-.page-narrow {
-    max-width: 880px;
-}
-
-.page-text {
-    max-width: 680px;
-}
-
 .page-head {
     margin-bottom: 48px;
 }

@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from scipy.optimize import minimize
 
 CONFIG = {
     "macro_priority": [
@@ -29,9 +30,6 @@ def build_macro_matrix(
             sub[macro].values / 100.0
         )
     return np.array(matrix)
-
-from scipy.optimize import minimize
-
 
 def solve_recipe(
     nutrition_df,
@@ -214,21 +212,26 @@ def solve_recipe(
 df = pd.read_csv("aliments_vitmin_pp.csv")
 
 ingredients = [
-    "Farine de blé tendre ou froment T55 (pour pains)",
-    "Eau",
-    "Huile de colza",
+    "Tomate ronde, crue",
+    "Concombre, chair et peau, cru",
+    "Poivron rouge, cru",
+    "Oignon, cru",
+    "Huile d'olive vierge extra",
     "Sel",
+    "Ail, cru"
 ]
 
 target_macros = {
-    "energie_kcal_100g": 304,
-    "proteines_g_100g": 11.3,
-    "lipides_g_100g": 8.3,
-    "sucres_g_100g": 45
+    "lipides_g_100g": 1.5,
+    "sucres_g_100g": 3.9,
+    "energie_kcal_100g": 36,
+    "proteines_g_100g": 0.9,
+    "fibres_g_100g": 1.2,
+    "sodium_mg_100g": 0.62
 }
 
 fixed = {
-    "Farine de blé tendre ou froment T55 (pour pains)": 60
+    # "Huile d'olive vierge extra": 1.5
 }
 
 result = solve_recipe(

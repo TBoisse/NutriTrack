@@ -261,7 +261,7 @@ function updateNutrition() {
         tr.innerHTML = `
       <td>${label}</td>
       <td><span class="badge-unit ${isKcal ? 'kcal' : ''}">${isKcal ? 'kcal' : unit}</span></td>
-      <td class="${isZero ? 'zero' : ''}">${isZero ? '0 ' + unit : display}</td>
+      <td class="${isZero ? 'zero' : ''}">${display}</td>
     `;
         tbody.appendChild(tr);
     });

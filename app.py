@@ -1,11 +1,12 @@
 from flask import Flask, render_template, jsonify
 import pandas as pd
 import os
+from pathlib import Path
 
 app = Flask(__name__)
 
-VITMIN_CSV_PATH = os.path.join(os.path.dirname(__file__), 'aliments_vitmin_pp.csv')
-RECO_CSV_PATH = os.path.join(os.path.dirname(__file__), 'aliments_reco.csv')
+VITMIN_CSV_PATH = Path(os.path.dirname(__file__), "data", 'aliments_vitmin_pp.csv')
+RECO_CSV_PATH = Path(os.path.dirname(__file__), "data", 'aliments_reco.csv')
 
 MACROS = [
     ("eau_g_100g", "Eau", "g"),

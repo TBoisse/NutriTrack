@@ -5,8 +5,8 @@ from pathlib import Path
 
 app = Flask(__name__)
 
-VITMIN_CSV_PATH = Path(os.path.dirname(__file__), "data", 'aliments_vitmin_pp.csv')
-RECO_CSV_PATH = Path(os.path.dirname(__file__), "data", 'aliments_reco.csv')
+VITMIN_CSV_PATH = Path("data", 'aliments_vitmin_pp.csv')
+RECO_CSV_PATH = Path("data", 'aliments_reco.csv')
 
 MACROS = [
     ("eau_g_100g", "Eau", "g"),
@@ -76,4 +76,4 @@ def get_all_aliments():
     return jsonify(result)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, host="0.0.0.0", port=5000)

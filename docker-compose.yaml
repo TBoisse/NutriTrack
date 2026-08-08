@@ -1,0 +1,26 @@
+services:
+  nginx-server:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/proxy.conf:/etc/nginx/nginx.conf
+      - ./logs:/var/log/nginx
+    restart: unless-stopped
+    networks:
+      - internal_network
+
+  front-server:
+    image: front-server:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    expose:
+      - 5000
+    networks:
+      - internal_network
+
+networks:
+  internal_network:
+    driver: bridge
